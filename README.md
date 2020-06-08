@@ -5,7 +5,7 @@ redPATH
 ## Overview
 
 <p align = "center">
-<img src=sample_results/overview_new.png alt="Overview" title="Overview" align="centre" height="300">
+<img src=sample_results/overview_new.png alt="Overview" title="Overview" align="centre" height="400">
 
 
 ## Table of content
