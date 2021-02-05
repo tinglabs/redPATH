@@ -1,6 +1,7 @@
 redPATH
 ======================
 > redPATH reconstructs the pseudo development time of cell lineages in single-cell RNA-seq data. It formulates the problem of pseudo temporal ordering into a Hamiltonian path problem and attempts to recover the pseudo development time in single-cell RNA-seq datasets. We provide a comprehensive analysis software tool with robust performance. 
+> redPATH is now capable of trajectory detection to identify linear / branching development.
 
 ## Overview
 
@@ -8,16 +9,16 @@ redPATH
 <img src=sample_results/overview_new.png alt="Overview" title="Overview" align="centre" height="400">
 
 
-## Table of content
+## Table of contents
 - [Installation](#installation)
-    - [Required Packages](#required_packages)
-    - [Install](#install)
-- [Example Usage](#example_usage)
-    - [Preprocessing](#preprocessing)
-    - [redPATH pseudotime](#redpath_pseudotime)
-    - [Biological Analysis](#bio_analysis)
-- [Citation](#cite)
-- [Maintenance](#maintenance)
+    - [Required Packages](#--required-packages)
+    - [Install](#--install)
+- [Example Usage](#example-usage)
+    - [Preprocessing](#--preprocessing)
+    - [redPATH pseudotime](#--redpath-pseudotime)
+    - [Biological Analysis](#--biological-analysis)
+- [Citation](#--citation)
+- [Maintenance](#--maintenance)
 
 ## Installation
 ### - Required Packages
@@ -28,7 +29,7 @@ After downloading the package, please extract and rename the folder to "redPATH"
 ```
 require(devtools)
 setwd("where redPATH folder is located")
-install("redPATH", args = c("--no-multiarch")
+install("redPATH", args = c("--no-multiarch"))
 
 ```
 
@@ -56,9 +57,9 @@ An optional function is also available to identify the G0-like cells:
 ```
 sample_mean_score <- llorens_reCAT_scores
 # Get kmeans clusters
-kmeans_clusters <- kmeans_clustering(sample_mean_score$mean_scores, k = 5)
+kmeans_clusters <- kmeans_clustering(sample_mean_score$mean_score, k = 5)
 
-test_for_g0 <- statistical_test(sample_mean_score$mean_scores, kmeans_clusters, threshold = 0.001)
+test_for_g0 <- statistical_test(sample_mean_score$mean_score, kmeans_clusters, threshold = 0.001)
 
 # Example output:
 # [1] "Possible group of G0-like cells is: 2"
@@ -66,8 +67,8 @@ test_for_g0 <- statistical_test(sample_mean_score$mean_scores, kmeans_clusters, 
 new_input_data <- input_data[,-which(kmeans_clusters == 2)]
 
 # Evaluation plots:
-d1 <- distribution_plot(sample_mean_score$mean_scores, kmeans_clusters)
-d2 <- mean_score_plot(sample_mean_score$mean_scores, kmeans_clusters, reCAT_ordIndex)
+d1 <- distribution_plot(sample_mean_score$mean_score, kmeans_clusters)
+d2 <- mean_score_plot(sample_mean_score$mean_score, kmeans_clusters, reCAT_ordIndex)
 
 ```
 
@@ -78,12 +79,11 @@ redpath_pseudotime <- redpath(filtered_GO_data, threadnum = 4, base_path_range =
 # base_path_range is set to the estimated number of cell types, k0, and k0 +4. 
 
 # Plot specific gene expression along the pseudotime
-cdk_gene_exprs <- get_specific_gene_exprs(full_gene_exprs_data = input_data, gene_name = "cdk11", type = "match", organism = "mm")
+cdk_gene_exprs <- get_specific_gene_exprs(full_gene_exprs_data = input_data, gene_name = "cdk11b", type = "match", organism = "mm")
 
 plot_cdk <- plot_specific_gene_exprs(cdk_gene_exprs, redpath_pseudotime, color_label = cell_type_label, order = T)
-require(scater)
-multiplot(plotlist = plot_cdk, layout = matrix(c(1:2), 2, 1)) # For a total number of 2 plots
-
+require(gridExtra)
+grid.arrange(grobs=plot_cdk, layout = matrix(c(1:4), 2, 2)) # For a total number of 4 plots
 ```
 
 ### - Biological Analysis
@@ -92,14 +92,14 @@ multiplot(plotlist = plot_cdk, layout = matrix(c(1:2), 2, 1)) # For a total numb
 
 ```
 # Distance Correlation and Maximal Information Coefficient calculation
-dcor_result <- calc_correlation(full_exprs_matrix = input_data, redpath_pseudotime, type = "dcor") 
-mic_result <- calc_correlation(full_exprs_matrix = input_data, redpath_pseudotime, type = "mic")
+dcor_result <- calc_correlation(full_gene_exprs = input_data, redpath_pseudotime, type = "dcor") 
+mic_result <- calc_correlation(full_gene_exprs = input_data, redpath_pseudotime, type = "mic")
 
 # Union Selection
-selected_result <- gene_selection(full_exprs_matrix = input_data, redpath_pseudotime, dcor_result, mic_result, threshold = 0.5)
+selected_result <- gene_selection(full_gene_exprs = input_data, redpath_pseudotime, dcor_result, mic_result, threshold = 0.5)
 
 # Intersection Selection
-selected_result <- gene_selection_intersection(full_exprs_matrix = input_data, redpath_pseudotime, dcor_result, mic_result, threshold = 0.5)
+selected_result <- gene_selection_intersection(full_gene_exprs = input_data, redpath_pseudotime, dcor_result, mic_result, threshold = 0.5)
 
 # selected_result returns a m genes by n cells matrix with the selected significant genes
 
@@ -114,16 +114,16 @@ selected_result <- gene_selection_intersection(full_exprs_matrix = input_data, r
 gene_state_result <- calc_all_hmm_diff_parallel(selected_result, cls_num = 2, threadnum = 4) 
 
 # Optional: plots the top 10 significant genes
-hmm_plots <- plot_hmm_full(selected_result, redpath_pseudotime, gene_state_result, cell_type_label = llorens_labels, num_plots = 10)
-require(scater)
-multiplot(plotlist = hmm_plots, layout = matrix(c(1:10), 5, 2)) # For a total number of 10 plots
+hmm_plots <- plot_hmm_full(selected_result, redpath_pseudotime, gene_state_result, color_label = llorens_labels, num_plots = 10)
+require(gridExtra)
+grid.arrange(grobs = hmm_plots, layout_matrix = matrix(c(1:10), 5, 2)) # For a total number of 10 plots
 
 # Infer gene clusters using hierarchical clustering
 inferred_gene_cluster <- get_gene_cluster(sorted_matrix = gene_state_result, cls_num = 8)
 
 # Heatmap plot
 cell_labels <- llorens_labels
-heatmap_plot <- plot_heatmap_analysis(sorted_matrix = inferred_gene_cluster, redpath_pseudotime, cell_labels = llorens_labels, gene_cluster = inferred_gene_cluster, input_type = "hmm")
+heatmap_plot <- plot_heatmap_analysis(sorted_matrix = gene_state_result, redpath_pseudotime, cell_labels = llorens_labels, gene_cluster = inferred_gene_cluster, input_type = "hmm")
 
 ```
 
@@ -135,7 +135,21 @@ plot(GO_summary_result, fontsize = 8)
 
 ```
 
-#### 3. 3D Cell proliferation and differentiation plots:
+#### 3. Trajectory detection:
+
+##### - Visualizing the linear / branching development of cells with pseudotime and cell type information
+
+```
+# Here, we utilize the multiple Hamiltonian path solutions to generate a transition matrix to infer the linear / branching development by visualization. We sum the probabilities of transitions between cells and visualize the transition matrix by PCA.
+# Note that, 'norm_res_new' is automatically saved to the global environment every time the 'redpath' function is performed. It will be overwritten.
+hamiltonian_path_solutions <- norm_res_new
+trajectory_visualization_data <- get_branch_viz_data(hamiltonian_path_solutions, redpath_pseudotime, labels = NULL)
+trajectory_plots <- plot_trajectory(trajectory_visualization_data, redpath_pseudotime)
+
+grid.arrange(grobs = trajectory_plots, layout_matrix=matrix(c(1:2), 1, 2))
+```
+
+#### 4. 3D Cell proliferation and differentiation plots:
 
 ##### - 3D plot with cell type labels and cell cycle stages
 
