@@ -28,7 +28,6 @@ After downloading the package, please extract and rename the folder to "redPATH"
 
 ```
 require(devtools)
-# Extract and rename the folder to 'redPATH'
 setwd("where the redPATH folder is located")
 install("redPATH", args = c("--no-multiarch"))
 
