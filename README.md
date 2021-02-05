@@ -141,7 +141,8 @@ plot(GO_summary_result, fontsize = 8)
 ##### - Visualizing the linear / branching development of cells with pseudotime and cell type information
 
 ```
-# Here, we utilize the multiple Hamiltonian path solutions to generate a transition matrix to infer the linear / branching development by visualization. We sum the probabilities of transitions between cells and visualize the transition matrix by PCA.
+# Here, we utilize the multiple Hamiltonian path solutions to generate a transition matrix to infer the linear / branching development by visualization. 
+# We sum the probabilities of transitions between cells and visualize the transition matrix by PCA.
 # Note that, 'norm_res_new' is automatically saved to the global environment every time the 'redpath' function is performed. It will be overwritten.
 hamiltonian_path_solutions <- norm_res_new
 trajectory_visualization_data <- get_branch_viz_data(hamiltonian_path_solutions, redpath_pseudotime, labels = NULL)
