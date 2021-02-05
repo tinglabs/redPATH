@@ -35,6 +35,7 @@ redpath_theme <- function(){
     plot.title = element_text(size = 20),
     axis.line.x = element_line(color = "black"),
     axis.line.y = element_line(color = "black"),
+    axis.ticks = element_line(color = "black"),
     axis.title.x = element_text(size = 15),
     axis.title.y = element_text(size = 15),
     axis.text.x = element_text(size = 10, color = "black"),
@@ -42,7 +43,8 @@ redpath_theme <- function(){
     panel.background = element_blank(),
     panel.grid.minor = element_blank(),
     panel.grid.major = element_blank(),
-    legend.key = element_rect(fill = "white"))
+    #legend.key = element_rect(fill = "white"))
+    legend.key = element_blank())
 }
 
 ##########################################################################################################
@@ -160,9 +162,9 @@ plot_hmm_full <- function(sorted_exprs_val, pseudotime, sorted_hmm_results=NULL,
     
     manual_colors <- c(redpath_colorset[1:n_col], hmm_colorset[1:n_hmm])
     if(n_hmm == 2){
-      manual_labels <- c(unique(color_label[order(pseudotime)]), "Low", "High")
+      manual_labels <- c(unique(as.character(color_label[order(pseudotime)])), "Low", "High")
     }else if(n_hmm ==3){
-      manual_labels <- c(unique(color_label[order(pseudotime)]), "Low", "Medium", "High")
+      manual_labels <- c(unique(as.character(color_label[order(pseudotime)])), "Low", "Medium", "High")
     }
     
     names(manual_colors) <- manual_labels

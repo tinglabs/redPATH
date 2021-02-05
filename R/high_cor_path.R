@@ -1,7 +1,8 @@
-require(mclust)
-require(combinat)
-require(MASS)
-require(dplyr)
+#require(mclust)
+#require(combinat)
+#require(MASS)
+#require(dplyr)
+#require(RcppAlgos)
 #library(fpc)
 #library(ICSNP)
 #library(flexmix)
@@ -55,35 +56,81 @@ get_permn <- function(n){
 #'@examples
 #'hamiltonian_path_as(kl_cpp(data))
 #'
+
 hamiltonian_path_force <- function(distance_matrix){
+  require(RcppAlgos)
   tmp <- c()
   matrix <- as.matrix(distance_matrix)
   # enumerate all possible paths
-  paths <- get_permn(nrow(matrix))
-  path_total_lengths <- sapply(paths, function(p) path_length(matrix, p))
-
-  hamilton_path <- paths[[which.min(path_total_lengths)]]
+  #paths <- get_permn(nrow(matrix))
+  #path_total_lengths <- sapply(paths, function(p) path_length(matrix, p))
+  n1 <- nrow(matrix)
+  paths <- permuteGeneral(n1, n1)
+  #paths <- as.data.frame(as.list(ipermv(c(1:n1))))
+  #path_total_lengths <- sapply(paths, function(p) sum(.Call("path_length_c",matrix, p)))
+  path_total_lengths <- apply(paths, 1, function(p) sum(.Call("path_length_c",matrix, p)))
+  
+  #hamilton_path <- paths[[which.min(path_total_lengths)]]
+  hamilton_path <- paths[which.min(path_total_lengths), ]
   
   min_dist <- min(path_total_lengths)
   
   return(c(min_dist, hamilton_path))
 }
 
+# Deprecated
+# hamiltonian_path_force <- function(distance_matrix){
+#   tmp <- c()
+#   matrix <- as.matrix(distance_matrix)
+#   # enumerate all possible paths
+#   paths <- get_permn(nrow(matrix))
+#   path_total_lengths <- sapply(paths, function(p) path_length(matrix, p))
+#   
+#   hamilton_path <- paths[[which.min(path_total_lengths)]]
+#   
+#   min_dist <- min(path_total_lengths)
+#   
+#   return(c(min_dist, hamilton_path))
+# }
+
+# deprecated
+# corr_dist <- function(x, y = NULL, method = NULL, use = "everything")
+# {
+#   x <- t(as.matrix(x))
+#   if(!is.null(y))
+#     y <- t(as.matrix(y))
+#   1 - (stats::cor(x, y) + 1) / 2
+# }
 
 corr_dist <- function(x, y = NULL, method = NULL, use = "everything")
 {
   x <- t(as.matrix(x))
   if(!is.null(y))
     y <- t(as.matrix(y))
-  1 - (stats::cor(x, y) + 1) / 2
+  a1 <- 1 - (cp_cor(x) + 1) / 2
+  diag(a1) <- 0
+  a1[upper.tri(a1)] <- t(a1)[upper.tri(a1)]
+  #rownames(a1) <- rownames(x)
+  #a1 <- upper_tri.assign(a1, t(a1)[lower_tri(a1)])
+  return(a1)
 }
 
-
+normalizeResult <- function(result){
+  new_result <- result
+  #new_result <- result / max(result)
+  new_result <- (new_result - min(new_result)) / (max(new_result) - min(new_result))
+  return(new_result)
+}
 normalizeResult2 <- function(clust_num_EM, result, tourlength, ordIndex)
 {
   new_result <- result
   new_result <- (new_result) / clust_num_EM  # *tourlength
+  
+  # feature scaling
+  new_result <- (new_result - min(new_result)) / (max(new_result) - min(new_result))
 
+  # sd scaling
+  # new_result <- (new_result - mean(new_result)) / sd(new_result)
   return(new_result)
   
 }
@@ -97,7 +144,7 @@ unnormalize_result <- function(clust_num_EM, result, tourlength, ordIndex)
   
 }
 
-high_cor_path <- function(clust_num_EM, cell_gene_exprs, stageIdxSmp, HMT_iterations, TSPMethod = "arbitrary_insertion", clustMethod = "GMM", rankType = "class", dist_type = "MHL", debug = FALSE, validate = F)
+high_cor_path <- function(clust_num_EM, base_path_reference, cell_gene_exprs, stageIdxSmp, HMT_iterations, TSPMethod = "arbitrary_insertion", clustMethod = "GMM", rankType = "class", dist_type = "MHL", debug = FALSE, validate = F)
 {
   
   if (clust_num_EM >= dim(cell_gene_exprs)[1])
@@ -108,7 +155,8 @@ high_cor_path <- function(clust_num_EM, cell_gene_exprs, stageIdxSmp, HMT_iterat
   {
     dist_mat <- corr_dist(cell_gene_exprs)
     scaled_distance <- .Call(stats:::C_DoubleCentre, dist_mat^2)
-    fit_hclust <- hclust(as.dist(ED2(scaled_distance)))
+    #fit_hclust <- hclust(as.dist(ED2(scaled_distance)))
+    fit_hclust <- hclust(as.dist(Rfast::Dist(scaled_distance)))
     cluster_result <- as.integer(cutree(fit_hclust, clust_num_EM))
     
   }
@@ -218,6 +266,8 @@ high_cor_path <- function(clust_num_EM, cell_gene_exprs, stageIdxSmp, HMT_iterat
   colnames(distance_matrix) <- paste("Clust", 1:clust_num_HMT, sep = "")
   #print(distance_matrix)
   
+  sp_cor_lst <- c()
+  
   tourLengthLst <- c()
   highCorLst <- c()
   tourLength <- 0
@@ -228,7 +278,8 @@ high_cor_path <- function(clust_num_EM, cell_gene_exprs, stageIdxSmp, HMT_iterat
   norm_forceLst <- matrix(0, nrow = 1, ncol = length(cluster_result))
   forceLength <- c()
   
-
+  n1_row <- nrow(cell_gene_exprs)
+  branch_trans <- matrix(0, n1_row, n1_row)
   if(TSPMethod == "force"){
     
     tmp <- hamiltonian_path_force(distance_matrix)
@@ -244,6 +295,11 @@ high_cor_path <- function(clust_num_EM, cell_gene_exprs, stageIdxSmp, HMT_iterat
     normResult <- normalizeResult2(clust_num_EM, ordResult, tourLength, ordIndex)
     forceLength <- c(forceLength, tourLength)
     
+    
+    #tmp_branch <- process_branch(normResult, F, n1_row)
+    #branch_trans <- branch_trans + tmp_branch
+    #print(dim(branch_trans))
+    #print(range(branch_trans))
     forceLst[1, ] <- ordResult
     norm_forceLst[1, ] <- normResult
     if(validate == T)
@@ -257,13 +313,16 @@ high_cor_path <- function(clust_num_EM, cell_gene_exprs, stageIdxSmp, HMT_iterat
       total_iterations <- 300
     }
     #for(t in 1:(HMT_iterations*clust_num_EM)){
+    se2 <- get_start_end(distance_matrix, k = 6)
     for(t in c(1:total_iterations)){
 
       
       t <- t
 
-      path <- hamiltonian_path_as(distance_matrix)
-      tourLength <- path_length(distance_matrix, path)
+      path <- hamiltonian_path_ai(distance_matrix, se2)
+      #path <- hamiltonian_path_as(distance_matrix)
+      #tourLength <- path_length(distance_matrix, path)
+      tourLength <- sum(.Call("path_length_c", distance_matrix, as.integer(path)))
 
       
       ordIndex <- path
@@ -273,20 +332,44 @@ high_cor_path <- function(clust_num_EM, cell_gene_exprs, stageIdxSmp, HMT_iterat
       #print(distance_matrix)
       normResult <- normalizeResult2(clust_num_EM, ordResult, tourLength, ordIndex)
       tourLengthLst <- c(tourLengthLst, tourLength)
+      forward_cor <- cor(base_path_reference, normResult, method = "spearman")
+      norm_back <- normalizeResult2(clust_num_EM, clust_num_EM + 1 - ordResult, tourLength, ordIndex)
+      #backward_cor <- cor(base_path_reference, 1 - normResult, method = "spearman")
+      backward_cor <- cor(base_path_reference, norm_back, method = "spearman")
+      cor_lst <- c(forward_cor, backward_cor)
+      sp_cor_lst <- c(sp_cor_lst, cor_lst[which.max(cor_lst)])
       #print(tourLengthLst)
+      
+      #tmp_branch <- process_branch(normResult, F, n1_row)
+      #branch_trans <- rbind(branch_trans, tmp_branch)
+      
       resultLst[t, ] <- ordResult
       norm_resultLst[t, ] <- normResult
     }
     #hist(tourLengthLst)
-    minLengthID <- which(tourLengthLst == min(tourLengthLst))[1]
+    #minLengthID <- which(tourLengthLst == min(tourLengthLst))[1]
+    
+    minLengthID <- which(sp_cor_lst == max(sp_cor_lst))
+    if(length(minLengthID) > 1){
+      pl <- tourLengthLst[minLengthID]
+      pl <- which(pl == min(pl))[1]
+      minLengthID <- minLengthID[pl]
+    }
+    
+    #sort_cor <- order(sp_cor_lst, decreasing = T)
+    #tmp_list <- resultLst[sort_cor[1:20], ]
+    #tmp_trans <- process_branch(tmp_list, T, n1_row)
+    #branch_trans <- branch_trans + tmp_trans
   }
+  #assign("branch_trans", )
   
+  assign("kl_dist", distance_matrix, envir = .GlobalEnv)
   
   if(TSPMethod == "force"){
-    bestTour <- list(highCor = NULL, norm_result = norm_forceLst[1,], result = forceLst[1, ], tourL = forceLength, dist = distance_matrix * clust_num_EM / max(distance_matrix))
+    bestTour <- list(highCor = NULL, norm_result = norm_forceLst[1,], result = forceLst[1, ], tourL = forceLength, dist = distance_matrix * clust_num_EM / max(distance_matrix), kl_dist = distance_matrix)
 
   }else{
-    bestTour <- list(highCor = NULL, norm_result = norm_resultLst[minLengthID, ], result = resultLst[minLengthID, ], tourL = tourLengthLst, dist = distance_matrix * clust_num_EM / max(distance_matrix))
+    bestTour <- list(highCor = NULL, norm_result = norm_resultLst[minLengthID, ], result = resultLst[minLengthID, ], tourL = tourLengthLst, dist = distance_matrix * clust_num_EM / max(distance_matrix), kl_dist = distance_matrix)
   }
   
   return(bestTour)

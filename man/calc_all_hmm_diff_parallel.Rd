@@ -4,8 +4,11 @@
 \alias{calc_all_hmm_diff_parallel}
 \title{HMM segmentation for each gene}
 \usage{
-calc_all_hmm_diff_parallel(sorted_gene_exprs_matrix, cls_num = 2,
-  threadnum = 1)
+calc_all_hmm_diff_parallel(
+  sorted_gene_exprs_matrix,
+  cls_num = 2,
+  threadnum = 1
+)
 }
 \arguments{
 \item{sorted_gene_exprs_matrix}{Result returned from gene_selection function. A re-ordered gene by cell matrix}

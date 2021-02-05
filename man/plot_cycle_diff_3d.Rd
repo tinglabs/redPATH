@@ -4,8 +4,7 @@
 \alias{plot_cycle_diff_3d}
 \title{Coupling cell cycle and differentiation 3-D plots}
 \usage{
-plot_cycle_diff_3d(recat_input, redpath_pseudotime, recat_symbol,
-  color_label)
+plot_cycle_diff_3d(recat_input, redpath_pseudotime, recat_symbol, color_label)
 }
 \arguments{
 \item{recat_input}{This is the normalizedResultLst obtained from reCAT software. It's generally save in a .RData file started with bestEnsemble...}

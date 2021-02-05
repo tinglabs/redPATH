@@ -4,8 +4,13 @@
 \alias{plot_hmm_full}
 \title{Plot function for HMM & gene expression changes}
 \usage{
-plot_hmm_full(sorted_exprs_val, pseudotime, sorted_hmm_results = NULL,
-  color_label = NULL, num_plots = 10)
+plot_hmm_full(
+  sorted_exprs_val,
+  pseudotime,
+  sorted_hmm_results = NULL,
+  color_label = NULL,
+  num_plots = 10
+)
 }
 \arguments{
 \item{sorted_exprs_val}{The gene expression input obtained from gene_selection. The ranked and sorted gene_expression matrix.}

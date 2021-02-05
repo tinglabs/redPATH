@@ -62,11 +62,14 @@ gene_selection <- function(full_gene_exprs, pseudo_time, correlation_vector, cor
   sorted_gene_exprs <- full_gene_exprs[ , order(pseudo_time)]
   
   if(is.null(correlation_vector2)){
+    correlation_vector <- signif(correlation_vector, 2)
     selection <- which(correlation_vector >= threshold)
     selection <- selection[order(schlitz_mic[selection])]
     selected_gene_exprs <- sorted_gene_exprs[selection, ]
     return(selected_gene_exprs)
   }else{
+    correlation_vector <- signif(correlation_vector, 2)
+    correlation_vector2 <- signif(correlation_vector2, 2)
     selection_1 <- which(correlation_vector >= threshold)
     selection_2 <- which(correlation_vector2 >= threshold)
     union_selection <- c(selection_1, selection_2)
@@ -102,11 +105,14 @@ gene_selection_intersection <- function(full_gene_exprs, pseudo_time, correlatio
   sorted_gene_exprs <- full_gene_exprs[ , order(pseudo_time)]
   
   if(is.null(correlation_vector2)){
+    correlation_vector <- signif(correlation_vector, 2)
     selection <- which(correlation_vector >= threshold)
     selection <- selection[order(schlitz_mic[selection])]
     selected_gene_exprs <- sorted_gene_exprs[selection, ]
     return(selected_gene_exprs)
   }else{
+    correlation_vector2 <- signif(correlation_vector2, 2)
+    correlation_vector <- signif(correlation_vector, 2)
     selection_1 <- which(correlation_vector >= threshold)
     selection_2 <- which(correlation_vector2 >= threshold)
     union_selection <- c(selection_1, selection_2)

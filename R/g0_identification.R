@@ -121,7 +121,7 @@ statistical_test <- function(mean_scores, kmean_result, threshold = 0.001){
 
 distribution_plot <- function(mean_scores, kmean_result){
   
-  
+  kmean_result <- as.factor(kmean_result)
   par(mfrow=c(3, 2)) 
   # Plot for each mean score
   g1 <- ggplot(mean_scores, aes(x = kmean_result, y = G1Score)) +
@@ -149,7 +149,10 @@ distribution_plot <- function(mean_scores, kmean_result){
     scale_x_discrete() + xlab("Kmeans Cluster") + ggtitle("M") + 
     ylab("Mean score")
   
-  multiplot(g1, g1s, s, g2, g2m, m, cols = 2)
+  # grid.arrange(g1, g1s, s, g2, g2m, m, cols = 2)
+  grid.arrange(g1, g1s, s, g2, g2m, m, layout_matrix=matrix(c(1:6), 3, 2))
+  
+  return(list(g1, g1s, s, g2, g2m, m))#, cols = 2)
 }
 
 #' Visualization of G0-like distribution in mean scores along a cell cycle time-series. 
@@ -201,6 +204,7 @@ mean_score_plot <- function(mean_scores, kmean_result, ordIndex){
     labs(title = "M", x = "Pseudotime", y = "Mean Scores", colour = "Selection")+
     theme(axis.title=element_text(size=10),title=element_text(size = 10),legend.text = element_text(size = 10), 
           legend.title = element_text(size= 10), axis.text = element_text(size = 10))+geom_point(size = 2)
+  grid.arrange(g1, g1s, s, g2, g2m, m, layout_matrix=matrix(c(1:6), 3, 2))
   
-  multiplot(g1, g1s, s, g2, g2m, m, cols = 2)
+  return(list(g1, g1s, s, g2, g2m, m))#, cols = 2)
 }

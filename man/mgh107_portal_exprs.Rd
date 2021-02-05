@@ -4,7 +4,9 @@
 \name{mgh107_portal_exprs}
 \alias{mgh107_portal_exprs}
 \title{MGH107 - single cell glioma dataset of MGH107 patient.}
-\format{A data frame with 23686 rows (genes) and 252 cells}
+\format{
+A data frame with 23686 rows (genes) and 252 cells
+}
 \usage{
 mgh107_portal_exprs
 }

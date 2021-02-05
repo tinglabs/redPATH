@@ -4,8 +4,12 @@
 \alias{plot_diff_3d}
 \title{Coupling cell cycle and differentiation 3-D plots - Gene Exprs}
 \usage{
-plot_diff_3d(recat_input, redpath_pseudotime, color_label = NULL,
-  marker_gene_exprs = NULL)
+plot_diff_3d(
+  recat_input,
+  redpath_pseudotime,
+  color_label = NULL,
+  marker_gene_exprs = NULL
+)
 }
 \arguments{
 \item{recat_input}{This is the normalizedResultLst obtained from reCAT software. It's generally save in a .RData file started with bestEnsemble...}

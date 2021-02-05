@@ -4,8 +4,7 @@
 \alias{calc_correlation}
 \title{Calculate correlation of gene expression with pseudotime}
 \usage{
-calc_correlation(full_gene_exprs, pseudo_time, type = "dcor",
-  order = F)
+calc_correlation(full_gene_exprs, pseudo_time, type = "dcor", order = F)
 }
 \arguments{
 \item{full_gene_exprs}{A gene (row) by cell (col) gene expression matrix with all genes.}

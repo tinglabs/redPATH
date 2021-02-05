@@ -4,7 +4,9 @@
 \name{llorens_labels}
 \alias{llorens_labels}
 \title{Llorens-B - single cell neural stem cells dataset.}
-\format{A vector of 145 cell type labels}
+\format{
+A vector of 145 cell type labels
+}
 \usage{
 llorens_labels
 }

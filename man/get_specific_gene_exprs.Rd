@@ -4,8 +4,12 @@
 \alias{get_specific_gene_exprs}
 \title{Search for specific gene expression}
 \usage{
-get_specific_gene_exprs(full_gene_exprs_matrix, gene_name = "cdk",
-  type = "grep", organism = "mm")
+get_specific_gene_exprs(
+  full_gene_exprs_matrix,
+  gene_name = "cdk",
+  type = "grep",
+  organism = "mm"
+)
 }
 \arguments{
 \item{full_gene_exprs_matrix}{This is the full gene (row) by cell (col) matrix of your dataset.}

@@ -13,13 +13,24 @@ round2 = function(x, n) {
   z*posneg
 }
 
-
+multiResultClass <- function(result1=NULL,result2=NULL)
+{
+  me <- list(
+    result1 = result1,
+    result2 = result2
+  )
+  
+  ## Set the name for the class
+  class(me) <- append(class(me),"multiResultClass")
+  return(me)
+}
 bestEnsembleHMT <- function(cell_gene_exprs, stageIdxSmp = NULL, HMT_iterations, beginNum = 10, 
                             endNum = 198, threads = 1, clustMethod = "Corr", dist_type = "KL2", 
                             debug = FALSE, base_path_range = c(7:10), step_size = 2, max_loop = NULL, 
                             max_num = 300)
 {
-
+  #require(RcppAlgos)
+  #require(mclust)
   require(doParallel)
   message("Calculating redPATH...")
   c1 <- makeCluster(threads)
@@ -66,7 +77,7 @@ bestEnsembleHMT <- function(cell_gene_exprs, stageIdxSmp = NULL, HMT_iterations,
   for (clust_num_EM in base_path_range) 
   {
     i <- clust_num_EM - (min(base_path_range)-1) 
-    best_cor_path <- high_cor_path(clust_num_EM, cell_gene_exprs, stageIdxSmp, HMT_iterations = HMT_iterations, TSPMethod = "force", clustMethod = clustMethod, dist_type = dist_type, debug = debug)
+    best_cor_path <- high_cor_path(clust_num_EM, NULL, cell_gene_exprs, stageIdxSmp, HMT_iterations = HMT_iterations, TSPMethod = "force", clustMethod = clustMethod, dist_type = dist_type, debug = debug)
 
     tmp_HMT_list[i, ] <- best_cor_path$result
     tmp_norm_HMT_list[i, ] <- best_cor_path$norm_result
@@ -81,18 +92,23 @@ bestEnsembleHMT <- function(cell_gene_exprs, stageIdxSmp = NULL, HMT_iterations,
 ###########################################################################################
   
   baseResult <- colMeans(tmp_HMT_list)
+  baseResult <- normalizeResult(baseResult)
+
   #print(baseResult)
   #print(tmp_HMT_list[1:4,])
   
   normalized_HMT_list[1, ] <- baseResult
   ensemble_HMT_list[1, ] <- baseResult
+  hmt_order_lst <- c()
   
-
+  n1_row <- nrow(cell_gene_exprs)
+  bt_matrix <- matrix(0, n1_row, n1_row)
   
   if (threads <= 1)
   {
     # sequential processing
     HMT_list[1, ] <- colMeans(tmp_HMT_list)
+    #HMT_list <- colMeans(tmp_HMT_list)#baseResult
     i <- 2
     for (clust_num_EM in seq_list)
     {
@@ -100,8 +116,14 @@ bestEnsembleHMT <- function(cell_gene_exprs, stageIdxSmp = NULL, HMT_iterations,
       #dyn.load("path_insertion_cost.dll")
       #Rcpp::sourceCpp("kl_opt.cpp")
       #source("kl_dist_optimized.R")
-      best_cor_path <- high_cor_path(clust_num_EM, cell_gene_exprs, stageIdxSmp, HMT_iterations = HMT_iterations, clustMethod = clustMethod, dist_type = dist_type, debug = debug)
+      require(mclust)
+      require(RcppAlgos)
+      best_cor_path <- high_cor_path(clust_num_EM, baseResult, cell_gene_exprs, stageIdxSmp, HMT_iterations = HMT_iterations, clustMethod = clustMethod, dist_type = dist_type, debug = debug)
       HMT_list[i, ] <- best_cor_path$norm_result
+      
+      #HMT_list <- rbind(HMT_list, best_cor_path$norm_result)
+      bt_matrix <- bt_matrix + HMT_list$branch_trans
+      print(dim(bt_matrix))
       i <- i + 1
     }
   }
@@ -111,28 +133,64 @@ bestEnsembleHMT <- function(cell_gene_exprs, stageIdxSmp = NULL, HMT_iterations,
     cl <- makeCluster(threads)
     registerDoParallel(cl)
     require(mclust)
-    HMT_list <- foreach(clust_num_EM = seq_list, .combine = 'rbind', .export = c("high_cor_path", "hamiltonian_path_force", "corr_dist", "normalizeResult2", 
+    require(RcppAlgos)
+    HMT_list_all <- foreach(clust_num_EM = seq_list, .combine = 'rbind', .export = c("high_cor_path","permuteGeneral", "hamiltonian_path_force", "corr_dist", "normalizeResult2", 
                                                                                  "Mclust", "mclustBIC","hamiltonian_path_as", "path_length", "ED2")) %dopar%
     {
       #dyn.load("path_insertion_cost.dll")
       #Rcpp::sourceCpp("kl_opt.cpp")
       #source("kl_dist_optimized.R")
-      best_cor_path <- high_cor_path(clust_num_EM, cell_gene_exprs, stageIdxSmp, HMT_iterations = HMT_iterations, clustMethod = clustMethod, dist_type = dist_type, debug = debug)
+      
+      #dyn.load("../src/redPATH.dll")
+      #dyn.load("../../force_trial.dll")
+      #Rcpp::sourceCpp("../src/kl_opt.cpp")
+      #source("kl_dist_optimized.R")
+      #source("../../ai_trial.R")
+      #source("high_cor_path.R")
+      
+      best_cor_path <- high_cor_path(clust_num_EM, baseResult, cell_gene_exprs, stageIdxSmp, HMT_iterations = HMT_iterations, clustMethod = clustMethod, dist_type = dist_type, debug = debug)
+      #hmt_order_lst <- rbind(hmt_order_lst, best_cor_path$result)
       #return(best_cor_path$result)
+      #return(nr = best_cor_path$norm_result, bt = best_cor_path$branch_trans)
+      #result <- multiResultClass()
+      #result$result1 <- best_cor_path$norm_result
+      #result$result2 <- best_cor_path$branch_trans
       return(best_cor_path$norm_result)
     }
+
     stopCluster(cl)
     closeAllConnections()
-    HMT_list <- rbind(baseResult, HMT_list)
+    HMT_list <- rbind(baseResult, HMT_list_all)
+    #print(HMT_list_all[[200]])
+    ###########################################
+    #l1 <- length(seq_list)
+    #for(i in c(1:length(seq_list))){
+    #  HMT_list <- rbind(HMT_list, HMT_list_all[[i]])
+    #  j <- l1 + i
+    #  bt_matrix <- bt_matrix + HMT_list_all[[j]]
+    #}
+    ###########################################
+    #print(dim(HMT_list_all$result1))
+    #for(i in c(1:length(seq_list))){
+    #  HMT_list <- rbind(HMT_list, HMT_list_all[[1]]$result1)
+      #HMT_list <- as.matrix(HMT_list)
+      #print(range(HMT_list))
+    #  bt_matrix <- bt_matrix + HMT_list_all[[2]]$result2
+      #bt_list <- rbind(bt_list, HMT_list_all$bt)
+    #}
+
 
   }
-
+  
+  #assign("branch_matrix", bt_matrix, .GlobalEnv)
+  #hmt_order_lst <- rbind(hmt_order_lst, tmp_HMT_list)
+  assign("norm_new", HMT_list, .GlobalEnv)
   i <- 2
   
 
   message("Finished calculating all paths...")
 
-  
+ 
   for (clust_num_EM in seq_list)
   {
 
@@ -142,12 +200,17 @@ bestEnsembleHMT <- function(cell_gene_exprs, stageIdxSmp = NULL, HMT_iterations,
     revCorLst <- 0
     
     tmp <- resulti
-    moveCorLst <- cor(ensemble_HMT_list[1, ], tmp)
+    #print(tmp)
+   
+    moveCorLst <- cor(ensemble_HMT_list[1, ], tmp, method = "spearman")
+    #moveCorLst <- sum(.Call("path_length_c", kl_dist, order(tmp)))
     
     tmp <- 1 - resulti #rev(resulti)
-    revCorLst <- cor(ensemble_HMT_list[1, ], tmp)
+    revCorLst <- cor(ensemble_HMT_list[1, ], tmp, method = "spearman")
+    #revCorLst <- sum(.Call("path_length_c", kl_dist, order(tmp)))
     
     if(moveCorLst >= revCorLst){
+    #if(moveCorLst <= revCorLst){
       normalized_HMT_list[i, ] <- resulti
     }else{
       normalized_HMT_list[i, ] <- (1)-resulti
@@ -158,7 +221,7 @@ bestEnsembleHMT <- function(cell_gene_exprs, stageIdxSmp = NULL, HMT_iterations,
   
   assign("norm_res_new", normalized_HMT_list, .GlobalEnv)
   
-  assign("norm_new", normalized_HMT_list, .GlobalEnv)
+ 
   i <- 2
 
   for (i in 2:nrow(normalized_HMT_list))

@@ -4,8 +4,12 @@
 \alias{get_GO_exp}
 \title{Preprocess Gene Expression}
 \usage{
-get_GO_exp(gene_cell_matrix, gene_type = "gene_names",
-  organism = "mouse", takelog = T)
+get_GO_exp(
+  gene_cell_matrix,
+  gene_type = "gene_names",
+  organism = "mouse",
+  takelog = T
+)
 }
 \arguments{
 \item{gene_cell_matrix}{A genes (row) by cells (col) matrix.}

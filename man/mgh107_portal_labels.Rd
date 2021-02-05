@@ -4,7 +4,9 @@
 \name{mgh107_portal_labels}
 \alias{mgh107_portal_labels}
 \title{MGH107 - single cell glioma dataset of MGH107 patient.}
-\format{A vector of 252 cell type labels}
+\format{
+A vector of 252 cell type labels
+}
 \usage{
 mgh107_portal_labels
 }

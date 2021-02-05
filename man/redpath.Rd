@@ -4,8 +4,14 @@
 \alias{redpath}
 \title{redPATH Pseudotime}
 \usage{
-redpath(cell_gene_exprs, threadnum, step_size = 1,
-  base_path_range = c(3:7), dist_type = "KL2", clustMethod = "Corr")
+redpath(
+  cell_gene_exprs,
+  threadnum,
+  step_size = 1,
+  base_path_range = c(3:7),
+  dist_type = "KL2",
+  clustMethod = "Corr"
+)
 }
 \arguments{
 \item{cell_gene_exprs}{The gene expression input obtained from get_GO_exp}

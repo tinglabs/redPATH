@@ -4,8 +4,14 @@
 \alias{plot_heatmap_analysis}
 \title{Heatmap Analysis}
 \usage{
-plot_heatmap_analysis(sorted_matrix, pseudo_time, cell_labels = NULL,
-  gene_cluster = NULL, heading = "HEATMAP", input_type = "hmm")
+plot_heatmap_analysis(
+  sorted_matrix,
+  pseudo_time,
+  cell_labels = NULL,
+  gene_cluster = NULL,
+  heading = "HEATMAP",
+  input_type = "hmm"
+)
 }
 \arguments{
 \item{sorted_matrix}{This can be either the HMM matrix or the sorted gene selection matrix obtained from earlier functions.}

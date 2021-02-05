@@ -4,8 +4,13 @@
 \alias{gene_selection_intersection}
 \title{Selects significant genes}
 \usage{
-gene_selection_intersection(full_gene_exprs, pseudo_time,
-  correlation_vector, correlation_vector2 = NULL, threshold = 0.5)
+gene_selection_intersection(
+  full_gene_exprs,
+  pseudo_time,
+  correlation_vector,
+  correlation_vector2 = NULL,
+  threshold = 0.5
+)
 }
 \arguments{
 \item{full_gene_exprs}{A gene (row) by cell (col) gene expression matrix with all genes.}

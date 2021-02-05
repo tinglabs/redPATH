@@ -4,8 +4,7 @@
 \alias{plot_specific_gene_exprs}
 \title{Plot function for specific gene expression changes}
 \usage{
-plot_specific_gene_exprs(selected_gene, pseudotime, color_label,
-  order = T)
+plot_specific_gene_exprs(selected_gene, pseudotime, color_label, order = T)
 }
 \arguments{
 \item{selected_gene}{The enquired specific gene expression matrix, obtained from "get_specific_gene_exprs".}

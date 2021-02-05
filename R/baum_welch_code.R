@@ -120,7 +120,7 @@ eln_Beta <- function(eln_A, eln_b)
   return(eln_beta)
 }
 
-#07. Compute eln(γt(i)) for all states Si and observations Ot
+#07. Compute eln(I_hat(2) * t(i)) for all states Si and observations Ot
 eln_Gamma <- function(eln_alpha,eln_beta)
 {
   N <- dim(eln_alpha)[1]
@@ -142,7 +142,7 @@ eln_Gamma <- function(eln_alpha,eln_beta)
   return(eln_gamma)  
 }
 
-#08. Compute eln(ξt(i, j)) for all state pairs Si and Sj and observations Ot
+#08. Compute eln(I_hat(3/4) t(i, j)) for all state pairs Si and Sj and observations Ot
 eln_Xi <- function(eln_A, eln_b, eln_alpha, eln_beta)
 {
   N <- dim(eln_alpha)[1]

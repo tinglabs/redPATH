@@ -36,16 +36,16 @@ calc_base_path <- function(tmp_normResultLst, tmpResultLst, base_path_range){
           }
           store_rev <- rbind(store_rev, c(j, k, l, m))
           #print(store_rev)
-          tmpCor <- cor(ri, rj)#, method = "spearman")
-          tmpCor <- tmpCor + cor(ri, rk)#, method = "spearman")
-          tmpCor <- tmpCor + cor(ri, rl)#, method = "spearman")
-          tmpCor <- tmpCor + cor(ri, rm)
-          tmpCor <- tmpCor + cor(rj, rk)#, method = "spearman")
-          tmpCor <- tmpCor + cor(rj, rl)#, method = "spearman")
-          tmpCor <- tmpCor + cor(rj, rm)
-          tmpCor <- tmpCor + cor(rl, rk)#, method = "spearman")
-          tmpCor <- tmpCor + cor(rl, rm)
-          tmpCor <- tmpCor + cor(rk, rm)
+          tmpCor <- cor(ri, rj, method = "spearman")#, method = "spearman")
+          tmpCor <- tmpCor + cor(ri, rk, method = "spearman")#, method = "spearman")
+          tmpCor <- tmpCor + cor(ri, rl, method = "spearman")#, method = "spearman")
+          tmpCor <- tmpCor + cor(ri, rm, method = "spearman")
+          tmpCor <- tmpCor + cor(rj, rk, method = "spearman")#, method = "spearman")
+          tmpCor <- tmpCor + cor(rj, rl, method = "spearman")#, method = "spearman")
+          tmpCor <- tmpCor + cor(rj, rm, method = "spearman")
+          tmpCor <- tmpCor + cor(rl, rk, method = "spearman")#, method = "spearman")
+          tmpCor <- tmpCor + cor(rl, rm, method = "spearman")
+          tmpCor <- tmpCor + cor(rk, rm, method = "spearman")
           
           tmpCorLst <- c(tmpCorLst, tmpCor)
         }
@@ -80,6 +80,6 @@ calc_base_path <- function(tmp_normResultLst, tmpResultLst, base_path_range){
   }else{
     tmpResultLst[5, ] <- normalizeResult2(base_path_range[5], (base_path_range[5] + 1 - tmpResultLst[5, ]), tourlength = NULL, ordIndex = NULL)
   }
-  
+  #print(range(tmpResultLst))
   return(tmpResultLst)
 }

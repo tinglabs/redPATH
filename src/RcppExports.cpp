@@ -6,6 +6,76 @@
 
 using namespace Rcpp;
 
+// c_cor
+NumericMatrix c_cor(NumericMatrix mat);
+RcppExport SEXP _redPATH_c_cor(SEXP matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    rcpp_result_gen = Rcpp::wrap(c_cor(mat));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cp_cor
+NumericMatrix cp_cor(NumericMatrix mat);
+RcppExport SEXP _redPATH_cp_cor(SEXP matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    rcpp_result_gen = Rcpp::wrap(cp_cor(mat));
+    return rcpp_result_gen;
+END_RCPP
+}
+// c_run_cor
+NumericVector c_run_cor(NumericMatrix mat, int nwindow);
+RcppExport SEXP _redPATH_c_run_cor(SEXP matSEXP, SEXP nwindowSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< int >::type nwindow(nwindowSEXP);
+    rcpp_result_gen = Rcpp::wrap(c_run_cor(mat, nwindow));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cp_run_cor
+NumericVector cp_run_cor(NumericMatrix mat, int nwindow);
+RcppExport SEXP _redPATH_cp_run_cor(SEXP matSEXP, SEXP nwindowSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< int >::type nwindow(nwindowSEXP);
+    rcpp_result_gen = Rcpp::wrap(cp_run_cor(mat, nwindow));
+    return rcpp_result_gen;
+END_RCPP
+}
+// c_run_cor_smart
+NumericVector c_run_cor_smart(NumericMatrix mat, int nwindow);
+RcppExport SEXP _redPATH_c_run_cor_smart(SEXP matSEXP, SEXP nwindowSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< int >::type nwindow(nwindowSEXP);
+    rcpp_result_gen = Rcpp::wrap(c_run_cor_smart(mat, nwindow));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cp_run_cor_smart
+NumericVector cp_run_cor_smart(NumericMatrix mat, int nwindow);
+RcppExport SEXP _redPATH_cp_run_cor_smart(SEXP matSEXP, SEXP nwindowSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< int >::type nwindow(nwindowSEXP);
+    rcpp_result_gen = Rcpp::wrap(cp_run_cor_smart(mat, nwindow));
+    return rcpp_result_gen;
+END_RCPP
+}
 // calc_vec
 Rcpp::NumericVector calc_vec(Rcpp::NumericVector v1, Rcpp::NumericVector v2);
 RcppExport SEXP _redPATH_calc_vec(SEXP v1SEXP, SEXP v2SEXP) {
@@ -43,12 +113,20 @@ END_RCPP
 }
 
 RcppExport SEXP path_insertion_cost(SEXP, SEXP, SEXP);
+RcppExport SEXP path_length_c(SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_redPATH_c_cor", (DL_FUNC) &_redPATH_c_cor, 1},
+    {"_redPATH_cp_cor", (DL_FUNC) &_redPATH_cp_cor, 1},
+    {"_redPATH_c_run_cor", (DL_FUNC) &_redPATH_c_run_cor, 2},
+    {"_redPATH_cp_run_cor", (DL_FUNC) &_redPATH_cp_run_cor, 2},
+    {"_redPATH_c_run_cor_smart", (DL_FUNC) &_redPATH_c_run_cor_smart, 2},
+    {"_redPATH_cp_run_cor_smart", (DL_FUNC) &_redPATH_cp_run_cor_smart, 2},
     {"_redPATH_calc_vec", (DL_FUNC) &_redPATH_calc_vec, 2},
     {"_redPATH_KL", (DL_FUNC) &_redPATH_KL, 2},
     {"_redPATH_ED2", (DL_FUNC) &_redPATH_ED2, 1},
     {"path_insertion_cost", (DL_FUNC) &path_insertion_cost, 3},
+    {"path_length_c",       (DL_FUNC) &path_length_c,       2},
     {NULL, NULL, 0}
 };
 

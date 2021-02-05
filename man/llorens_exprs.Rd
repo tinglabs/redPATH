@@ -4,7 +4,9 @@
 \name{llorens_exprs}
 \alias{llorens_exprs}
 \title{Llorens-B - single cell neural stem cells dataset.}
-\format{A data frame with 8105 rows (genes) and 145 cells}
+\format{
+A data frame with 8105 rows (genes) and 145 cells
+}
 \usage{
 llorens_exprs
 }
