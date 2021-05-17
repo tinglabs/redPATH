@@ -176,7 +176,9 @@ p1
 
 ## Citation & References
 
-This work is currently under submission. Reconstructing the pseudo development time of cell lineages in single-cell RNA-seq data and applications in cancer.
+This work is currently in press.
+redPATH: Reconstructing the Pseudo Development Time of Cell Lineages in Single-cell RNA-seq Data and Applications in Cancer,
+Genomics, Proteomics & Bioinformatics, 2021. https://doi.org/10.1016/j.gpb.2020.06.014.
 
 References:
 ###### 1. Llorens-Bobadilla, E., Zhao, S., Baser, A., Saiz-Castro, G., Zwadlo, K. and Martin-Villalba, A. (2015) Single-Cell Transcriptomics Reveals a Population of Dormant Neural Stem Cells that Become Activated upon Brain Injury. Cell Stem Cell, 17, 329-340. 
