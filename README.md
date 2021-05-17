@@ -177,7 +177,7 @@ p1
 ## Citation & References
 
 This work is currently in press.
-redPATH: Reconstructing the Pseudo Development Time of Cell Lineages in Single-cell RNA-seq Data and Applications in Cancer,
+redPATH: Reconstructing the Pseudo Development Time of Cell Lineages in Single-cell RNA-seq Data and Applications in Cancer.
 Genomics, Proteomics & Bioinformatics, 2021. https://doi.org/10.1016/j.gpb.2020.06.014.
 
 References:
