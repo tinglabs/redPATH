@@ -187,5 +187,5 @@ References:
 
 ## Maintenance
 
-If there's any questions / problems regarding redPATH, please feel free to contact Ken Xie - xkk17@mails.tsinghua.edu.cn. Thank you!
+If there's any questions / problems regarding redPATH, please feel free to contact Ken Xie - kk.xie419@gmail.com. Thank you!
 
