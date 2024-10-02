@@ -23,6 +23,18 @@ redPATH
 ## Installation
 ### - Required Packages
 car, combinat, doParallel, dplyr, energy, ggplot2, GOsummaries, gplots, MASS, mclust, minerva, plotly, Rcpp, RcppArmadillo, scater
+
+##### Apple Silicon Chips MAC system:
+Please manually add the path to TBB library which is required package for the computation prior to the installation:
+```
+# In CMD
+brew install tbb
+```
+```
+# In R
+Sys.setenv(PKG_LIBS = "-L/opt/homebrew/opt/tbb/lib -ltbb")
+Sys.setenv(PKG_CPPFLAGS = "-I/opt/homebrew/opt/tbb/include")
+```
 ### - Install
 After downloading the package, please extract and rename the folder to "redPATH"
 
@@ -33,17 +45,6 @@ install("redPATH", args = c("--no-multiarch"))
 
 ```
 
-### - Apple Silicon Chips MAC system:
-Please manually add the path to TBB library which is required package for the computation:
-```
-# In CMD
-brew install tbb
-```
-```
-# In R
-Sys.setenv(PKG_LIBS = "-L/opt/homebrew/opt/tbb/lib -ltbb")
-Sys.setenv(PKG_CPPFLAGS = "-I/opt/homebrew/opt/tbb/include")
-```
 ## Example Usage:
 
 ### - Preprocessing
