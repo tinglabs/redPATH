@@ -33,6 +33,17 @@ install("redPATH", args = c("--no-multiarch"))
 
 ```
 
+### - Apple Silicon Chips MAC system:
+Please manually add the path to TBB library which is required package for the computation:
+```
+# In CMD
+brew install tbb
+```
+```
+# In R
+Sys.setenv(PKG_LIBS = "-L/opt/homebrew/opt/tbb/lib -ltbb")
+Sys.setenv(PKG_CPPFLAGS = "-I/opt/homebrew/opt/tbb/include")
+```
 ## Example Usage:
 
 ### - Preprocessing
